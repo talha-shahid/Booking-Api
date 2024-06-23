@@ -47,11 +47,6 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 6
   },
-  role: {
-    type: String,
-    enum: ['REGULAR', 'ADMIN'],
-    default: 'REGULAR'
-  },
   bookings: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Booking' }]
 });
 

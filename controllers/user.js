@@ -3,6 +3,7 @@ import User from '../models/user.js';
 import { compare } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { sendToken } from '../utils/features.js';
+import Agent from '../models/agent.js';
 
 //crete a new user and save it to database and save it to cookie
 const newUser = async (req, res) => {
@@ -32,6 +33,27 @@ const login =  async (req, res) => {
 }
 
 
+const agentLogin =  async (req, res) => {
+    
+    const {email, password} = req.body;
+    // console.log("username", username)
+    // console.log("password", password)
+    const agent = await Agent.findOne({email}).select("+password");
+    // console.log("user", user)
+    const isMatch = await compare(password, agent.password)
+
+    if(!agent) {
+        return res.status(404).json({message: 'Invalid Username'});
+
+    }
+
+    if(!isMatch) {
+        return res.status(401).json({message: 'Invalid Password'});
+    }
+    sendToken(res, agent, 200, `Logged In!. Welcome back ${agent.name}`);
+}
+
+
 
 //get my profile
 const getMyProfile =
@@ -54,4 +76,4 @@ const logout = async (req, res, next) => {
 
 
 
-export {login, newUser, getMyProfile , logout }
+export {login, newUser, getMyProfile , logout , agentLogin}
